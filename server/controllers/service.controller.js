@@ -6,6 +6,7 @@
  */
 
 const Service = require("../models/service.model");
+const APIFeatures = require("../utils/APIFeatures");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
@@ -15,7 +16,13 @@ const catchAsync = require("../utils/catchAsync");
  * @access  Public
  */
 const getServices = catchAsync(async (req, res, next) => {
-    const services = await Service.find();
+    const features = new APIFeatures(Service.find(), req.query)
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+        
+    const services = await features;
 
     res.status(200).json({
         status: "success",
@@ -101,6 +108,18 @@ const updateService = catchAsync(async (req, res, next) => {
         return next(new AppError("არასწორი სერვისის ID!", 400));
     }
 
+    // Find the service by ID
+    const service = await Service.findById(id);
+
+    if (!service) {
+        return next(new AppError("ვერ მოიძებნა სერვისი განახლებისთვის!", 404));
+    }
+
+    // Check if the current user is the provider of the service
+    if (service.providerID.toString() !== req.user._id.toString()) {
+        return next(new AppError("თქვენ არ გაქვთ უფლება ამ სერვისის განახლების!", 403));
+    }
+
     // Only allow updatable fields
     const allowedFields = ["title", "description", "price", "tags", "images"];
     const updates = {};
@@ -114,10 +133,6 @@ const updateService = catchAsync(async (req, res, next) => {
         new: true,
         runValidators: true
     });
-
-    if (!updatedService) {
-        return next(new AppError("ვერ მოიძებნა სერვისი განახლებისთვის!", 404));
-    }
 
     res.status(200).json({
         status: "success",
