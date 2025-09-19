@@ -1,7 +1,7 @@
 /**
  * @file Service Model
  * @description Defines the Mongoose schema for storing service-related data with tags support (letters, numbers, spaces allowed only).
- * @author Luka
+ * @author Luka Tskhvaradze
  * @version 1.3.0
  * @created 2025-09-07
  */
@@ -122,11 +122,26 @@ const serviceSchema = new mongoose.Schema(
                 message: "რევიუების რაოდენობა უნდა იყოს არანაკლებ 0!",
             },
         },
+
+        reviews: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: "Review"
+            }
+        ]
     },
     {
         timestamps: true,
     }
 );
+
+// serviceSchema.pre('save', async function(next) {
+//     if(!this.isModified('reviews')) return next();
+
+//     this.totalReviews++;
+
+
+// });
 
 /**
  * Pre-save hook to ensure averageRating consistency.

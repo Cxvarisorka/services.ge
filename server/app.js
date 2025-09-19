@@ -13,6 +13,9 @@
 const express = require("express");
 const morgan = require("morgan");
 
+// Built-in modules
+const path = require("path");
+
 // Error handling
 const globalErrorHandler = require("./controllers/error.controller.js");
 
@@ -20,9 +23,18 @@ const globalErrorHandler = require("./controllers/error.controller.js");
 const userRouter = require("./routers/user.router");
 const serviceRouter = require("./routers/service.router.js");
 const cookieParser = require("cookie-parser");
+const reviewRouter = require("./routers/review.router.js");
 
 // Initialize Express application instance
 const app = express();
+
+// Serve static files from the "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Static file serving
+app.get('/reset-password.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', "pages", "reset-password.html"));
+});
 
 // Loggin request in dev env
 if(process.env.NODE_ENV === "dev") {
@@ -39,6 +51,7 @@ app.use(express.json());
 // Middleware routers
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/services", serviceRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 // Global error handling middleware
 // This middleware catches all unhandled errors and provides consistent error responses

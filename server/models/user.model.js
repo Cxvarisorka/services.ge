@@ -168,6 +168,7 @@ userSchema.pre('save', async function(next) {
     next();
 });
 
+
 /**
  * Instance method to compare a candidate password with the user's hashed password.
  * 
