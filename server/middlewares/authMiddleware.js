@@ -33,8 +33,6 @@ const protect = async (req, res, next) => {
         // 3. Find user by ID and exclude sensitive fields
         const user = await User.findById(decoded.id).select("-password");
 
-        console.log(user)
-
         if (!user) {
             return next(new AppError("მომხმარებელი არ არსებობს!", 404));
         }
