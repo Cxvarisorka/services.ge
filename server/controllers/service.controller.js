@@ -3,6 +3,7 @@
  * @description Controller functions for managing Service resources (CRUD operations).
  * Provides endpoints for listing, retrieving, creating, updating, and deleting services.
  * All responses follow a consistent JSON structure.
+ * @author Luka Tskhvaradze
  */
 
 const Service = require("../models/service.model");
@@ -16,13 +17,16 @@ const catchAsync = require("../utils/catchAsync");
  * @access  Public
  */
 const getServices = catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(Service.find(), req.query)
-        .filter()
-        .sort()
-        .limitFields()
-        .paginate();
+    // const features = new APIFeatures(Service.find(), req.query)
+    //     .filter()
+    //     .sort()
+    //     .limitFields()
+    //     .paginate();
         
-    const services = await features;
+    // const services = await features;
+
+    const services = await Service.find();
+
 
     res.status(200).json({
         status: "success",
